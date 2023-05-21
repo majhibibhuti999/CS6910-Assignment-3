@@ -77,14 +77,26 @@ The model can be trained using the `Train` method.
 
 ## Question 4
 
-  Created the confusion matrix for Test dataset using wandb's prexisting function:
-```python
-  class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat','Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
-  wandb.init(entity = 'cs22m031',project = 'CS6910_DL_assignment_1',name = 'Confusion Matrix')
-  wandb.log({"conf_mat" : wandb.sklearn.plot_confusion_matrix(
-                        Y_test,predicted,
-                        class_names)})
-```
+Evaluated Accuracy for Test data after getting the best configuration from sweeps in Q2.ipynb
+
+Best configuration is :
+ ``` python
+    batchsize = 128
+    hidden_size = 1024
+    char_embed_size = 128
+    no_of_layers = 2
+    dropout = 0.5
+    epochs = 20
+    rnn = 'LSTM'
+ ```
+ - Stored the predictions using the Evaluate function :
+ 
+ ``` python
+    test_loss,test_accuracy,predictions = Evaluate(False,test_eng_word,test_hin_word,Encoder1,Decoder1,batchsize,hidden_size,char_embed_size,no_of_layers)
+ ```
+ - Using this predictions which is a dataframe having columns as original and predicted hindi words.
+ 
+ - Store this using to_excel method of pandas into a folder Prediction_vanilla
 
 ## Question 10:
 
