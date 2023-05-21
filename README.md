@@ -98,67 +98,31 @@ Best configuration is :
  
  - Store this using to_excel method of pandas into a folder Prediction_vanilla
 
-## Question 10:
+## Question 5:
 
-The best configurations used for mnist dataset is:
+Evaluated Accuracy for Test data after getting the best configuration from sweeps for Attention model.
 
-Configuration 1:
+Best Configuration is :
 
-```python
-        'optimizer' : { 'values' : ['nadam']},
-        'batchsize' : { 'values' : [256]},
-        'no_of_features' : {'values' : [784]},
-        'no_of_classes' : {'values' : [10]},
-        'no_of_layers' : { 'values' : [6]},
-        'no_of_neurons' : {'values' : [512]},
-        'max_epochs' : {'values' : [15]},
-        'eta' : { 'values' : [1e-4]},
-        'initialization' : { 'values' :['he']},
-        'activation' : { 'values' : ['relu']},
-        'loss' : { 'values' : ['cross']},
-        'weight_decay'  : { 'values' : [0]}
+``` python
+batchsize = 512
+hidden_size = 1024
+char_embed_size = 1024
+no_of_layers = 1
+dropout = 0.4
+epochs = 30
+rnn = 'LSTM'
 ```
-  Training accuracy = 99.91852
-  Validation accuracy = 98.08333
-  
-Configuration 2:
 
-```python
-        'optimizer' : { 'values' : ['nadam']},
-        'batchsize' : { 'values' : [256]},
-        'no_of_features' : {'values' : [784]},
-        'no_of_classes' : {'values' : [10]},
-        'no_of_layers' : { 'values' : [5]},
-        'no_of_neurons' : {'values' : [256]},
-        'max_epochs' : {'values' : [15]},
-        'eta' : { 'values' : [0.002]},
-        'initialization' : { 'values' :['he']},
-        'activation' : { 'values' : ['relu']},
-        'loss' : { 'values' : ['cross']},
-        'weight_decay'  : { 'values' : [0]}
-```
-  Training Accuracy = 99.83704
-  Validation Accuracy = 98.0166
-  
-Configuration 3:
+- Got the test_loss,Test_accuracy and predictions using the Evaluate function:
 
-```python
-        'optimizer' : { 'values' : ['nadam']},
-        'batchsize' : { 'values' : [128]},
-        'no_of_features' : {'values' : [784]},
-        'no_of_classes' : {'values' : [10]},
-        'no_of_layers' : { 'values' : [6]},
-        'no_of_neurons' : {'values' : [256]},
-        'max_epochs' : {'values' : [10]},
-        'eta' : { 'values' : [1e-3]},
-        'initialization' : { 'values' :['he']},
-        'activation' : { 'values' : ['relu']},
-        'loss' : { 'values' : ['cross']},
-        'weight_decay'  : { 'values' : [0]}
+``` python
+test_loss,test_accuracy,predictions = Evaluate(True,test_eng_word,test_hin_word,Encoder1,Decoder1,batchsize,hidden_size,char_embed_size,no_of_layers)
 ```
-  
-  Training Accuracy = 99.77407
-  Validation Accuracy = 97.8667
+
+- Using this predictions which is a dataframe having columns as original and predicted hindi words .
+
+- Store this using to_excel method of pandas into a folder Prediction_vanilla.
   
 ## Instructions about Train.py
 
@@ -166,15 +130,25 @@ Configuration 3:
 
 - In the arguments into the terminal please give valid credentials like project_name and entity_name.
 
-- You can add new initialization method by adding member function in the class NeuralNetwork and adding the name of the initializer into the Initialization_list dictionary.
+- List of argument supported by train.py is :
 
-- You can add new activation functions by  adding member function in the class NeuralNetwork and adding the name of the activation function into the activation_list dictionary.
-
-- You can add new optimization algorithms by adding the code in the space specified inside the fit method.
+``` python
+    -wp,--wandb_project = wandb project name
+    -we,--wandb_entity = wandb entity name
+    -e,--epochs = no of epochs
+    -b,--batchsize = size of batch
+    -hidden,--hidden_size = size of cell state
+    -embed, -- embedding_size = embedding size
+    -cell,--cell_type = cell type choices = ['LSTM','GRU','RNN']
+    -drop,--dropout = probablity of dropout
+    -attn,--attentionRequired = choices = [True,False]
+    -layer,--no_of_layers = no of stack of RNN or LSTM or GRU
+    
+```
 
 - For calling train.py with appropriate argument please follow the given example:
 
-  `python train.py -e 1 -w_i Xavier -b 32 -o nag -nhl 3 -sz 128 -d fashion_mnist -l mean_squared_error -lr 0.001`
+  `python train.py -wp projectname -we entity name -e 10 -b 128 -hidden 1024 -embed 1024 -cell 'LSTM' -drop 0.3 -attn True -layer 2 
   
 
 
