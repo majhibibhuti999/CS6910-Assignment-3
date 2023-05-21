@@ -10,7 +10,7 @@ I chose the Hindi Language dataset for the task of Transliteration.
 Using pandas read all three train,valid and test data.
 Created Functions for Encoder,Decoder and Seq2Seq.
 
-## Question 2-4
+## Question 2
 
 Created Functions for Encoder,Decoder,Valevaluate(evaluates the validation data),withoutattention function(used in sweeps) and sweep configuration
 
@@ -22,131 +22,60 @@ sweep_configuration = {
     'metric' : { 'goal' : 'maximize',
     'name' : 'validation_accuracy'},
     'parameters':{
-        'batchsize' : {'values' : [1024]},
-        'input_embedding_size' : {'values' : [128]},
-        'no_of_layers' : {'values' : [2]},
-        'hidden_size' : {'values' : [256]},
-        'cell_type' : {'values' : ['LSTM']},
+        'batchsize' : {'values' : [64,128,256,512,1024]},
+        'input_embedding_size' : {'values' : [128,256,512,1024]},
+        'no_of_layers' : {'values' : [1,2,3,4,5,6,7,8]},
+        'hidden_size' : {'values' : [128,256,512,1024]},
+        'cell_type' : {'values' : ['RNN','GRU','LSTM']},
         'bidirectional' : {'values' : ['Yes']},
-        'dropout' : {'values' : [0.3]},
-        'epochs' : {'values' : [10]}
+        'dropout' : {'values' : [0.1,0.2,0.3,0.4,0.5]},
+        'epochs' : {'values' : [10,20,30]}
     }
 }
+
 ```
 
-### Steps to build the Neural Network.
+### Steps to build the Seq2Seq Network.
 
-Inside the class NeuralNetwork I have written necessary functions for the implementing Forward propagation,Back propagation and different Gradient descent algorithms.
+Inside the .ipynb file have created Functions for encoder,decoder and train that takes instances of encoder and decoder with specified parameters
 
-An Instance of NeuralNetwork is as follows:
+An Instance of Encoder is as follows:
 
 ```python
-NN = NeuralNetwork(optimizer,batchsize,no_of_features,no_of_classes,no_of_layers,no_of_neurons_in_each_layer, \
-                    max_epochs,eta,initialization_method,activation_method,weight_decay, \
-                    epsilon,momentum,beta,beta1,beta2)
+ encoder = Encoder(char_embed_size,hidden_size,no_of_layers,dropout,rnn)
 ```
 
 It can be implemented using the following parameters:
 
-- optimizer:
-  
-  The optimizer value is passed as a string. Inside the Class NeuralNetwork, there is a fit method that has if-else statements for selecting the specified optimizer that is passed.
-  
-- batchsize:
+- char_embed_size = Embedding size required to get a representation of a character.
 
-  The batchsize is passed as integer that specifies the size of minibatch of datapoints needed for different gradient descent algorithms.
-  
-- no_of_features:
+- hidden_size = Size of cell state of RNN,LSTM,GRU
 
-  The no_of_features is passed as integer denoting the size of the flatten datapoints.
-  
-- no_of_classes:
+- no_of_layers = no of stacks of RNN,LSTM,GRU one upon another.
 
-  The no_of_classes is passed as integer denoting the no of labels of the dataset used.
-  
-- no_of_layers:
-  
-  no_of_layers is passed as integer denoting the no of layers used in the network including input layer, output layer and all the hidden layers.
- 
-- no_of_neurons_in_each_layers:
+- dropout = ranges between 0-1. denotes the probability to dropout.
 
-  no_of_neurons_in_each_layers is passed as a list of integers which denotes the sizes of hidden layers.
- 
-- max_epochs:
+- rnn = LSTM or GRU or RNN
 
-  max_epochs is passed as integer which denotes the no of times gradient_descent algorithm is called.
-  
-- eta:
-  
-  eta is passed as float which denotes the learning rate.
-  
-- initialization_method:
- 
-  initialization_method is passed as a string denoting the initialization method used to initialize the weights of the network. There is an   `Initialization_list` which is a dictionary of `key:string value:function pair` that stores all the types of initialization functions.
-  
-- activation_method:
-  
-  activation_method is passed as a string denoting the activation function used in the network. There is an `activation_list` which is a dictionary of  `key:string value:function` pair that stores all the types of activation functions.
-  
-- weight_decay:
-  
-  weight_decay is passed as a float. This is used for implementing `L2 regularization` during the weight updates of the network.
-  
-- epsilon:
-  
-  epsilon is passed as float. This is a very small number used be optimizers.
-  
-- momentum:
-  
-  momentum is passed as float. This is used for momentum and Nesterov optimizers.
-  
-- beta:
-  
-  beta is passed as float. This is used for RMSprop optimizers.
-  
-- beta1:
+An Instance of a Decoder is as follows:
 
-  beta1 is passed as float. This is used for adam and nadam optimizers.
+``` python
+ decoder = Decoder(char_embed_size,hidden_size,no_of_layers,dropout,rnn).to(device)
+```
+Parameters are same as Encoder. Only difference is Encoder is bidirectional.
   
-- beta2
-  
-  beta2 is pased as float. This is used for adam and nadam optimizers.
-  
-### Training the Neural Network
+### Training the Seq2Seq Network
 
 
-The model can be trained using the `NeuralNetwork.fit()` method.
+The model can be trained using the `Train` method.
 
-- for an instance of Neural network given earlier passing the data as X_train as the training images and Y_train as the corresponding labels:
+- for an instance of Seq2Seq network given earlier we can train it by calling the train function as follows:
 
 ```python
-    NN.fit(X_train,Y_train)
-```
-- inside the fit method using
-
-```python
-thetas = NN.initialization_list[self.initialization_method] 
+    Encoder1,Decoder1 = train(batchsize,hidden_size,char_embed_size,no_of_layers,dropout,epochs,rnn)
 ```
 
-  we initialize the weights of the given network.
-
-- For NN.max_epochs using both forward and backward propagation algorithm for different optimizers
-```python
-activation,preactivation = NN.feed_forward(X_train[x:x+NN.batchsize],thetas,NN.no_of_layers)
-grads = NN.back_propagate(activation,preactivation,thetas,Y_train[x:x+NN.batchsize])
-```
-
-### Testing the Neural Network
-
-- For testing purpose the class NeuralNetwork has `NN.predict`, `NN.accuracy_score`, `NN.compute_loss`.
-
-```python
-  predictions = NN.predict(X_test)
-  accuracy = NN.accuracy_score(Y_test,predicted)
-  loss = NN.compute_loss(predictions,Y_test)
-```
-
-## Question 7
+## Question 4
 
   Created the confusion matrix for Test dataset using wandb's prexisting function:
 ```python
